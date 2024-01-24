@@ -1,11 +1,11 @@
-TOKEN = "6967242862:AAF8TrkM4COZWlOnzw-gCwaSiMWfyf1I0TM"
+TOKEN = "YOUR TOKEN"
 
-chat_record = -1002021008574
+chat_record = "ID_GROUPS"
 
-id_developer = 1387002896
+id_developer = "ID_DEV"
 
-id_andry = 678570906
+id_andry = "ID_ANDRY"
 
-id_viktoria = 1144817598
+id_viktoria = "ID_ADMIN"
 
 admin_bot = [id_developer, id_andry, id_viktoria]
