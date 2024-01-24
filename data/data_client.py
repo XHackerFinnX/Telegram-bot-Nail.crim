@@ -122,6 +122,169 @@ async def sql_add_back_date(id_users):
     return
 
 
+async def sql_add_continue_week_date(id_users):
+    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "note_users.db")
+    async with aiosqlite.connect(db_path) as db:
+        cur = await db.cursor()
+        await cur.execute('''CREATE TABLE IF NOT EXISTS users_data(id_users TEXT,
+                                                            fname TEXT,
+                                                            lname TEXT,
+                                                            uname TEXT,
+                                                            day INTEGER,
+                                                            month INTEGER,
+                                                            status TEXT)''')
+        await db.commit()
+        
+        await cur.execute(f"SELECT id_users, day, month FROM users_data WHERE id_users == {str(id_users)}")
+        users = await cur.fetchall()
+                
+        if (int(users[0][1]) in [29, 30, 31]) and (int(users[0][2]) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
+            day = await check_date_day_plus(int(users[0][1]), int(users[0][2]))
+            month = await check_date_month_plus(int(users[0][1]), int(users[0][2]))
+        else:
+            if (int(users[0][1]) in [25, 26, 27, 28]) and (int(users[0][2]) == 1):
+                day = await check_date_day_plus(31, int(users[0][2]))
+                month = await check_date_month_plus(31, int(users[0][2]))
+            
+            elif (int(users[0][1]) in [23, 24, 25, 26, 27, 28]) and (int(users[0][2]) == 2):
+                day = await check_date_day_plus(29, int(users[0][2]))
+                month = await check_date_month_plus(29, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [25, 26, 27, 28]) and (int(users[0][2]) == 3):
+                day = await check_date_day_plus(31, int(users[0][2]))
+                month = await check_date_month_plus(31, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [24, 25, 26, 27, 28]) and (int(users[0][2]) == 4):
+                day = await check_date_day_plus(30, int(users[0][2]))
+                month = await check_date_month_plus(30, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [25, 26, 27, 28]) and (int(users[0][2]) == 5):
+                day = await check_date_day_plus(31, int(users[0][2]))
+                month = await check_date_month_plus(31, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [24, 25, 26, 27, 28]) and (int(users[0][2]) == 6):
+                day = await check_date_day_plus(30, int(users[0][2]))
+                month = await check_date_month_plus(30, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [25, 26, 27, 28]) and (int(users[0][2]) == 7):
+                day = await check_date_day_plus(31, int(users[0][2]))
+                month = await check_date_month_plus(31, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [25, 26, 27, 28]) and (int(users[0][2]) == 8):
+                day = await check_date_day_plus(31, int(users[0][2]))
+                month = await check_date_month_plus(31, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [24, 25, 26, 27, 28]) and (int(users[0][2]) == 9):
+                day = await check_date_day_plus(30, int(users[0][2]))
+                month = await check_date_month_plus(30, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [25, 26, 27, 28]) and (int(users[0][2]) == 10):
+                day = await check_date_day_plus(31, int(users[0][2]))
+                month = await check_date_month_plus(31, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [24, 25, 26, 27, 28]) and (int(users[0][2]) == 11):
+                day = await check_date_day_plus(30, int(users[0][2]))
+                month = await check_date_month_plus(30, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [25, 26, 27, 28]) and (int(users[0][2]) == 12):
+                day = await check_date_day_plus(31, int(users[0][2]))
+                month = await check_date_month_plus(31, int(users[0][2]))
+            
+            else:
+                day = int(users[0][1]) + 7
+                month = int(users[0][2])
+        
+        await cur.execute(f"UPDATE users_data SET day = {day}, month = {month} WHERE id_users == {str(id_users)}")
+        await db.commit()
+        
+        await display_time(int(id_users), day, month)
+                
+    return
+
+
+async def sql_add_back_week_date(id_users):
+    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "note_users.db")
+    async with aiosqlite.connect(db_path) as db:
+        cur = await db.cursor()
+        await cur.execute('''CREATE TABLE IF NOT EXISTS users_data(id_users TEXT,
+                                                            fname TEXT,
+                                                            lname TEXT,
+                                                            uname TEXT,
+                                                            day INTEGER,
+                                                            month INTEGER,
+                                                            status TEXT)''')
+        await db.commit()
+        
+        await cur.execute(f"SELECT id_users, day, month FROM users_data WHERE id_users == {str(id_users)}")
+        users = await cur.fetchall()
+    
+        if (int(users[0][1]) == 1) and (int(users[0][2]) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]):
+            day = await check_date_day_minus(int(users[0][1]), int(users[0][2]))
+            month = await check_date_month_minus(int(users[0][1]), int(users[0][2]))
+        else:
+            if (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 1):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+            
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 2):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 3):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 4):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 5):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 6):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 7):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 8):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 9):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 10):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 11):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+                
+            elif (int(users[0][1]) in [2, 3, 4, 5, 6, 7]) and (int(users[0][2]) == 12):
+                day = await check_date_day_minus(1, int(users[0][2]))
+                month = await check_date_month_minus(1, int(users[0][2]))
+            else:
+                day = int(users[0][1]) - 7
+                month = int(users[0][2])
+        
+        await cur.execute(f"UPDATE users_data SET day = {day}, month = {month} WHERE id_users == {str(id_users)}")
+        await db.commit()
+        
+        await display_time(int(id_users), day, month)
+                
+    return
+
+
 async def sql_print_day(id_users):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     db_path = os.path.join(BASE_DIR, "note_users.db")
