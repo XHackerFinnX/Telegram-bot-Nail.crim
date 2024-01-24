@@ -171,22 +171,27 @@ async def note_date_time(callback: types.CallbackQuery):
             await callback.answer("неделя")
 
         elif callback.data == "1нед":
-            await sql_add_continue_week(callback.message.chat.id)
+            if await sql_add_continue_week(callback.message.chat.id):
+                
+                try:
+                    await bot.delete_message(callback.from_user.id, callback.message.message_id)
 
-            try:
-                await bot.delete_message(callback.from_user.id, callback.message.message_id)
-
-            except MessageToDeleteNotFound:
-                print("message not found")
+                except MessageToDeleteNotFound:
+                    print("message not found")
+                
+            else:
+                await callback.answer(f"Больше 53 недель нет!")
 
         elif callback.data == "-1нед":
-            await sql_add_back_week(callback.message.chat.id)
+            if await sql_add_back_week(callback.message.chat.id):
+                try:
+                    await bot.delete_message(callback.from_user.id, callback.message.message_id)
 
-            try:
-                await bot.delete_message(callback.from_user.id, callback.message.message_id)
-
-            except MessageToDeleteNotFound:
-                print("message not found")
+                except MessageToDeleteNotFound:
+                    print("message not found")
+            
+            else:
+                await callback.answer(f"Меньше 1 недели нет!")
     
     except MessageCantBeDeleted:
         print("Использование callback запроса для админа больше 48 часов!", "MessageCantBeDeleted")

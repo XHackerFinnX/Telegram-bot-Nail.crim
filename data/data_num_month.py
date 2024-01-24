@@ -126,6 +126,114 @@ async def sql_choice_month(month):
         else:
             return True
         
+
+async def sql_info_week_date(monday_date, monday_month, tuesday_date, tuesday_month, wednesday_date, wednesday_month, thursday_date, thursday_month, friday_date, friday_month, saturday_date, saturday_month, sunday_date, sunday_month):
+    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "note_form.db")
+    async with aiosqlite.connect(db_path) as db:
+        cur = await db.cursor()
+        await cur.execute('''CREATE TABLE IF NOT EXISTS form_data(id_users TEXT,
+                                                                fname TEXT,
+                                                                lname TEXT,
+                                                                uname TEXT,
+                                                                day INTEGER,
+                                                                month INTEGER,
+                                                                time TEXT,
+                                                                comment TEXT)''')
+        await db.commit()
         
-async def sql_day_month_choise_month(users, day, month):
-    pass
+        #Понедельник
+        await cur.execute(f"SELECT time, comment, id_users FROM form_data WHERE day == {int(monday_date)} AND month == {int(monday_month)}")
+        assigned_date_monday = await cur.fetchall()
+        await db.commit()
+        if assigned_date_monday == []:
+            date_monday = "Записей нет!\n"
+        
+        else:
+            date_monday = ""
+            for i in assigned_date_monday:
+                i = "Время: " + i[0] + "\nКомментарий: " + i[1] + "\n"
+                date_monday = date_monday + i
+        
+        #Вторник
+        await cur.execute(f"SELECT time, comment, id_users FROM form_data WHERE day == {int(tuesday_date)} AND month == {int(tuesday_month)}")
+        assigned_date_tuesday = await cur.fetchall()
+        await db.commit()
+        if assigned_date_tuesday == []:
+            date_tuesday = "Записей нет!\n"
+        
+        else:
+            date_tuesday = ""
+            for i in assigned_date_tuesday:
+                i = "Время: " + i[0] + "\nКомментарий: " + i[1] + "\n"
+                date_tuesday = date_tuesday + i
+            
+        #Среда
+        await cur.execute(f"SELECT time, comment, id_users FROM form_data WHERE day == {int(wednesday_date)} AND month == {int(wednesday_month)}")
+        assigned_date_wednesday = await cur.fetchall()
+        await db.commit()
+        if assigned_date_wednesday == []:
+            date_wednesday = "Записей нет!\n"
+        
+        else:
+            date_wednesday = ""
+            for i in assigned_date_wednesday:
+                i = "Время: " + i[0] + "\nКомментарий: " + i[1] + "\n"
+                date_wednesday = date_wednesday + i
+        
+        #Четверг
+        await cur.execute(f"SELECT time, comment, id_users FROM form_data WHERE day == {int(thursday_date)} AND month == {int(thursday_month)}")
+        assigned_date_thursday = await cur.fetchall()
+        await db.commit()
+        if assigned_date_thursday == []:
+            date_thursday = "Записей нет!\n"
+        
+        else:
+            date_thursday = ""
+            for i in assigned_date_thursday:
+                i = "Время: " + i[0] + "\nКомментарий: " + i[1] + "\n"
+                date_thursday = date_thursday + i
+                
+        #Пятница
+        await cur.execute(f"SELECT time, comment, id_users FROM form_data WHERE day == {int(friday_date)} AND month == {int(friday_month)}")
+        assigned_date_friday = await cur.fetchall()
+        await db.commit()
+        if assigned_date_friday == []:
+            date_friday = "Записей нет!\n"
+        
+        else:
+            date_friday = ""
+            for i in assigned_date_friday:
+                i = "Время: " + i[0] + "\nКомментарий: " + i[1] + "\n"
+                date_friday = date_friday + i
+        
+        #Суббота
+        await cur.execute(f"SELECT time, comment, id_users FROM form_data WHERE day == {int(saturday_date)} AND month == {int(saturday_month)}")
+        assigned_date_saturday = await cur.fetchall()
+        await db.commit()
+        if assigned_date_saturday == []:
+            date_saturday = "Записей нет!\n"
+        
+        else:
+            date_saturday = ""
+            for i in assigned_date_saturday:
+                i = "Время: " + i[0] + "\nКомментарий: " + i[1] + "\n"
+                date_saturday = date_saturday + i
+                
+        #Воскресенье
+        await cur.execute(f"SELECT time, comment, id_users FROM form_data WHERE day == {int(sunday_date)} AND month == {int(sunday_month)}")
+        assigned_date_sunday = await cur.fetchall()
+        await db.commit()
+        if assigned_date_sunday == []:
+            date_sunday = "Записей нет!"
+        
+        else:
+            date_sunday = ""
+            for i in assigned_date_sunday:
+                i = "Время: " + i[0] + "\nКомментарий: " + i[1] + "\n"
+                date_sunday = date_sunday + i
+                
+        return date_monday, date_tuesday, date_wednesday, date_thursday, date_friday, date_saturday, date_sunday
+            
+        

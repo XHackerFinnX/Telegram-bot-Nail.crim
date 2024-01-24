@@ -87,19 +87,6 @@ async def sql_admin_delete_day(day, month):
             return False
         
         
-async def sql_admin_move_chart():
-    
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(BASE_DIR, "note_admin.db")
-    async with aiosqlite.connect(db_path) as db:
-        cur = await db.cursor()
-        await cur.execute('''CREATE TABLE IF NOT EXISTS admin_data(id_users TEXT,
-                                                                    day INTEGER,
-                                                                    month INTEGER,
-                                                                    time_day TEXT)''')
-        await db.commit()
-        
-        
 async def sql_text_for_client(day, month):
     
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -190,10 +177,15 @@ async def sql_add_continue_week(id_users):
         
         week = int(users[0][0]) + 1
         
+        if week > 53:
+            return False
+        
         await cur.execute(f"UPDATE admin_week SET week = {int(week)}, id_users = '{id_users}'")
         await db.commit()
         
         await admin_chart_display(id_users, week)
+        
+        return True
 
 async def sql_add_back_week(id_users):
     
@@ -209,7 +201,12 @@ async def sql_add_back_week(id_users):
         
         week = int(users[0][0]) - 1
         
+        if week < 1:
+            return False
+        
         await cur.execute(f"UPDATE admin_week SET week = {int(week)}, id_users = '{id_users}'")
         await db.commit()
         
         await admin_chart_display(id_users, week)
+        
+        return True

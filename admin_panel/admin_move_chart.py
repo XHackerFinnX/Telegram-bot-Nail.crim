@@ -23,8 +23,6 @@ async def chart_day(message: types.Message):
     await sql_add_week(message.chat.id, num_week)
     
     await admin_chart_display(message.chat.id, num_week)
-    
-    await message.answer("В разработке")
 
 def start_chart(dp: Dispatcher):
     

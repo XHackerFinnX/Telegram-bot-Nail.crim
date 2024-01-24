@@ -1,11 +1,11 @@
-TOKEN = "YOUR TOKEN"
+TOKEN = ""
 
-chat_record = "ID_GROUPS"
+chat_record = 0
 
-id_developer = "ID_DEV"
+id_developer = 0
 
-id_andry = "ID_ANDRY"
+id_andry = 0
 
-id_viktoria = "ID_ADMIN"
+id_viktoria = 0
 
 admin_bot = [id_developer, id_andry, id_viktoria]
