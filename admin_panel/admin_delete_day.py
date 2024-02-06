@@ -34,12 +34,17 @@ async def day(message: types.Message, state: FSMContext):
             await state.finish()
 
             return
-        
-        data['day_del'] = message.text
-        
-        day_and_month = data['day_del'].split(".")
-        day = day_and_month[0]
-        month = day_and_month[1]
+        try:
+            data['day_del'] = message.text
+
+            day_and_month = data['day_del'].split(".")
+            day = day_and_month[0]
+            month = day_and_month[1]
+        except IndexError:
+            await message.answer("Некорректно ввели дату!", reply_markup= kb_admin_action)
+            await state.finish()
+            
+            return
         
         if await sql_admin_delete_day(day, month):
             await message.answer("Готово", reply_markup= kb_admin_action)

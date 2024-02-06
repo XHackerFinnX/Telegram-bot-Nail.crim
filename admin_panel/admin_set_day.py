@@ -46,12 +46,25 @@ async def day_time(message: types.Message, state: FSMContext):
     
     async with state.proxy() as data:
         data['time_day'] = message.text
+        try:
+            day_and_month = data['day'].split(".")
+            day = day_and_month[0]
+            month = day_and_month[1]
+            
+            td = data['time_day'].split("\n\n")
+            time_day = []
+            
+            for i in td:
+                time_day.append(i+" - Свободно")
+            time_day = "\n\n".join(time_day)
+
+        except IndexError:
+            await message.answer("Некорректно ввели дату!", reply_markup= kb_admin_action)
+            await state.finish()
+            
+            return
         
-        day_and_month = data['day'].split(".")
-        day = day_and_month[0]
-        month = day_and_month[1]
-        
-        await sql_admin_add_day(message.chat.id, day, month, data["time_day"])
+        await sql_admin_add_day(message.chat.id, day, month, time_day)
         
         await message.answer("Готово", reply_markup= kb_admin_action)
         await state.finish()

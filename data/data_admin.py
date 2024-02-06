@@ -73,17 +73,19 @@ async def sql_admin_delete_day(day, month):
                                                                     month INTEGER,
                                                                     time_day TEXT)''')
         await db.commit()
-        
-        await cur.execute(f"SELECT day, month FROM admin_data WHERE day == {day} AND month == {month}")
-        users = await cur.fetchall()
-        
-        if users != []:
-            await cur.execute(f"DELETE FROM admin_data WHERE (day == {int(day)} AND month == {int(month)})")
-            await db.commit()
-            
-            return True
-        
-        else:
+        try:
+            await cur.execute(f"SELECT day, month FROM admin_data WHERE day == {day} AND month == {month}")
+            users = await cur.fetchall()
+
+            if users != []:
+                await cur.execute(f"DELETE FROM admin_data WHERE (day == {int(day)} AND month == {int(month)})")
+                await db.commit()
+
+                return True
+
+            else:
+                return False
+        except:
             return False
         
         

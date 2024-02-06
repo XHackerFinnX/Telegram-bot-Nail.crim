@@ -17,13 +17,14 @@ def sql_start_form():
                                                         day INTEGER,
                                                         month INTEGER,
                                                         time TEXT,
-                                                        comment TEXT)''')
+                                                        comment TEXT,
+                                                        status INTEGER)''')
     base.commit()
     
     return
 
 
-async def sql_add_record(id_users, fname, lname, uname, day, month, time, comment):
+async def sql_add_record(id_users, fname, lname, uname, day, month, time, comment, status):
     
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     db_path = os.path.join(BASE_DIR, "note_form.db")
@@ -36,10 +37,11 @@ async def sql_add_record(id_users, fname, lname, uname, day, month, time, commen
                                                                 day INTEGER,
                                                                 month INTEGER,
                                                                 time TEXT,
-                                                                comment TEXT)''')
+                                                                comment TEXT,
+                                                                status INTEGER)''')
         await db.commit()
         
-        await cur.execute(f"INSERT INTO form_data VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (id_users, fname, lname, uname, day, month, time, comment))
+        await cur.execute(f"INSERT INTO form_data VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (id_users, fname, lname, uname, day, month, time, comment, status))
         await db.commit()
         
         
@@ -83,3 +85,26 @@ async def sql_update_make_appointment_time(day, month, time):
             print("Ошибка с выбором времени")
             
             return
+        
+
+async def sql_status_null(id_users, day, month, time, status):
+    
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, "note_form.db")
+    async with aiosqlite.connect(db_path) as db:
+        cur = await db.cursor()
+        await cur.execute('''CREATE TABLE IF NOT EXISTS form_data(id_users TEXT,
+                                                                fname TEXT,
+                                                                lname TEXT,
+                                                                uname TEXT,
+                                                                day INTEGER,
+                                                                month INTEGER,
+                                                                time TEXT,
+                                                                comment TEXT,
+                                                                status INTEGER)''')
+        await db.commit()
+        
+        await cur.execute(f"UPDATE form_data SET status = {int(0)} WHERE id_users == '{id_users}' AND day == {int(day)} AND month == {int(month)} AND time == '{time}' AND status == {int(status)}")
+        await db.commit()
+        
+        return

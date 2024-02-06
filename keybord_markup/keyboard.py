@@ -27,7 +27,8 @@ kb_admin_action = types.ReplyKeyboardMarkup(resize_keyboard=True)
 kb_day = types.KeyboardButton("Назначить день 🗓")
 kb_day_delete = types.KeyboardButton("Убрать день 🗓")
 kb_chart_move = types.KeyboardButton("Посмотреть график 📊")
-kb_admin_action.add(kb_day, kb_day_delete, kb_chart_move, kb_bs)
+kb_mailing = types.KeyboardButton("Рассылка ✉️")
+kb_admin_action.add(kb_day, kb_day_delete, kb_chart_move, kb_mailing, kb_bs)
 
 kb_remove = types.ReplyKeyboardRemove()
 

@@ -1,7 +1,8 @@
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted
+from aiohttp.client_exceptions import ClientOSError, ClientConnectorError
+from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted, TelegramAPIError, NetworkError, RetryAfter
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from config.config import TOKEN, admin_bot
+from config.config import TOKEN, admin_bot, price
 from config.date_update import day_month_update
 from config.num_month import numbers_month
 from keybord_markup.keyboard import kb_start, kb_back_start, kb_start_admin, kb_admin_action, keyboard_free_time
@@ -10,6 +11,7 @@ from display.month_display import display_month
 from admin_panel.admin_set_day import start_print_day
 from admin_panel.admin_delete_day import start_delete_day
 from admin_panel.admin_move_chart import start_chart
+from admin_panel.admin_mailing import start_mailing
 from data.data_client import sql_start_users , sql_add_client, sql_make_appointment_status_record
 from data.data_client import sql_add_continue_date, sql_add_back_date, sql_print_day, sql_make_appointment_time
 from data.data_client import sql_add_continue_week_date, sql_add_back_week_date
@@ -23,6 +25,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 print("Бот запущен!")
+print("nail.crim")
 
 sql_start_users()
 sql_start_admin()
@@ -33,8 +36,9 @@ sql_start_month()
 start_print_day(dp)
 start_delete_day(dp)
 start_chart(dp)
+start_mailing(dp)
 
-@dp.message_handler(commands=["start"])
+@dp.message_handler(commands=["start", "update"])
 async def start(message: types.Message):
     
     day, month = await day_month_update()
@@ -46,8 +50,12 @@ async def start(message: types.Message):
     if message.chat.id in admin_bot:
         await message.answer("Добро пожаловать администратор Nail.crim", reply_markup=kb_start_admin)
         
+        await message.answer(price)
+        
     else:
         await message.answer("Добро пожаловать к Nail.crim", reply_markup=kb_start)
+        
+        await message.answer(price)
     
     await sql_add_client(message.chat.id, fname, lname, uname, day, month, "NO")
     
@@ -98,7 +106,68 @@ async def note_time(message: types.Message):
 async def del_text(message: types.Message):
     
     await message.delete()
-  
+           
+@dp.errors_handler(exception=OSError)
+async def error_oserror(update: types.Update, exception: OSError):
+    
+    if isinstance(exception, OSError):
+        IGNORE_ERRNO = {
+            10038,
+            121,
+        }
+    
+    return True
+
+@dp.errors_handler(exception=NetworkError)
+async def error_oserror(update: types.Update, exception: NetworkError):
+        
+    if isinstance(exception, NetworkError):
+        IGNORE_ERRNO = {
+            10038,
+            121,
+        }
+        
+    return True
+
+@dp.errors_handler(exception=TelegramAPIError)
+async def error_oserror(update: types.Update, exception: TelegramAPIError):
+    
+    if isinstance(exception, TelegramAPIError):
+        IGNORE_ERRNO = {
+            10038,
+            121,
+        }
+        
+    return True
+
+@dp.errors_handler(exception=ClientOSError)
+async def error_oserror(update: types.Update, exception: ClientOSError):
+    
+    if isinstance(exception, TelegramAPIError):
+        IGNORE_ERRNO = {
+            10038,
+            121,
+        }
+        
+    return True
+
+@dp.errors_handler(exception=ClientConnectorError)
+async def error_oserror(update: types.Update, exception: ClientConnectorError):  
+    
+    if isinstance(exception, TelegramAPIError):
+        IGNORE_ERRNO = {
+            10038,
+            121,
+        }
+        
+    return True
+
+@dp.errors_handler(exception=RetryAfter)
+async def exception_handler(message: types.Message, update: types.Update, exception: RetryAfter):
+    
+    await bot.send_message(message.chat.id, text="Не флудите! Иначе будете заблокированы на 24 часа")
+    
+    return True
 
 @dp.callback_query_handler()
 async def note_date_time(callback: types.CallbackQuery):
@@ -221,4 +290,8 @@ async def note_date_time(callback: types.CallbackQuery):
 
 
 if __name__ == "__main__":
-    executor.start_polling(dp)
+    while True:
+        try:
+            executor.start_polling(dp, skip_updates=True)
+        except:
+            print("Любая ошибка")
